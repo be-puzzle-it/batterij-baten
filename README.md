@@ -85,8 +85,9 @@ Statisch JSON-bestand, geen database. Elke stekkerbatterij-**variant**
 `tweakers_url`, want Tweakers prijst elke variant apart.
 
 **Enkel Synergrid-gehomologeerde toestellen worden opgenomen, en de
-Synergrid-lijst is het vertrekpunt** De opbouw van deze
-lijst gebeurt in omgekeerde richting t.o.v. een klassieke prijsvergelijker vertrekt het onderzoek bij de officiële
+Synergrid-lijst is het vertrekpunt.** De opbouw van deze lijst gebeurt in
+omgekeerde richting t.o.v. een klassieke prijsvergelijker: het onderzoek
+vertrekt bij de officiële
 [Synergrid C10/26-lijst](https://www.synergrid.be/images/downloads/c10_26_list_of_pgu_compliant_with_c10_11_ed2_1_12_2019.xlsx)
 zelf (kolom "Energy storage" = X/x/×, gefilterd op een gehomologeerd
 vermogen ≤3000W om professioneel geïnstalleerde hybride-omvormersystemen
@@ -121,7 +122,7 @@ prijzen te verversen. Ik vertrek dan bij de Synergrid C10/26-lijst (zie
 hierboven) om te bepalen welke batterijen er bestaan, en zoek per product
 de prijs/specs op — bij voorkeur rechtstreeks bij de fabrikant of elders online (vb thuisbatterijengids.net) als
 terugvalpositie wanneer de fabrikant iets niet publiceert. Ik werk daarmee
-`public/data/batteries.json` bij;
+`public/data/batteries.json` bij.
 
 Dit ververst niet enkel de prijs, maar ook `manufacturer_url` en `notes`
 (specs-caveats, terugkerende/verborgen kosten, reviews, garantie- en
