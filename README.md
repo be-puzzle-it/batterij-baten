@@ -85,10 +85,8 @@ Statisch JSON-bestand, geen database. Elke stekkerbatterij-**variant**
 `tweakers_url`, want Tweakers prijst elke variant apart.
 
 **Enkel Synergrid-gehomologeerde toestellen worden opgenomen, en de
-Synergrid-lijst is het vertrekpunt, niet Tweakers.** De opbouw van deze
-lijst gebeurt in omgekeerde richting t.o.v. een klassieke prijsvergelijker:
-in plaats van te starten bij wat Tweakers toont en dat achteraf te toetsen
-aan Synergrid, vertrekt het onderzoek bij de officiële
+Synergrid-lijst is het vertrekpunt** De opbouw van deze
+lijst gebeurt in omgekeerde richting t.o.v. een klassieke prijsvergelijker vertrekt het onderzoek bij de officiële
 [Synergrid C10/26-lijst](https://www.synergrid.be/images/downloads/c10_26_list_of_pgu_compliant_with_c10_11_ed2_1_12_2019.xlsx)
 zelf (kolom "Energy storage" = X/x/×, gefilterd op een gehomologeerd
 vermogen ≤3000W om professioneel geïnstalleerde hybride-omvormersystemen
@@ -117,30 +115,19 @@ in een tabelletje boven `notes`, samen met `warranty_years`.
 
 ### Prijzen verversen
 
-Er is **geen geautomatiseerde dagelijkse scraper** — dat bleek niet haalbaar:
-Tweakers zet elke onbevestigde request (ook de undocumented
-`/ajax/price_chart/...`-endpoint) achter DPG Media's interactieve
-cookie-consentmuur, die enkel een echte browsersessie kan passeren. Een
-simpel PHP-cronscript op one.com komt daar dus nooit voorbij, en een
-officiële/publieke Pricewatch-API bestaat niet (enkel een betaalde,
-exclusieve partnership voor bedrijven zoals Omnia).
-
-In de praktijk: vraag me (in een Claude Code-sessie) af en toe om de
+Er is **geen geautomatiseerde dagelijkse scraper**.  
+Om dat op te vangen: vraag me (in een Claude Code-sessie) af en toe om de
 prijzen te verversen. Ik vertrek dan bij de Synergrid C10/26-lijst (zie
 hierboven) om te bepalen welke batterijen er bestaan, en zoek per product
-de prijs/specs op — bij voorkeur rechtstreeks bij de fabrikant, met
-Tweakers (via een echte browser in de Browser-pane, die de DPG
-Media-consentmuur automatisch passeert) of thuisbatterijengids.net als
+de prijs/specs op — bij voorkeur rechtstreeks bij de fabrikant of elders online (vb thuisbatterijengids.net) als
 terugvalpositie wanneer de fabrikant iets niet publiceert. Ik werk daarmee
-`public/data/batteries.json` bij; jij upload daarna het bijgewerkte bestand
-naar one.com — verder is er niets te configureren of te beveiligen (geen
-token, geen cron, geen PHP nodig).
+`public/data/batteries.json` bij;
 
 Dit ververst niet enkel de prijs, maar ook `manufacturer_url` en `notes`
 (specs-caveats, terugkerende/verborgen kosten, reviews, garantie- en
 veiligheidsissues) — zie de bestaande entries voor het detailniveau dat
 verwacht wordt (bv. `aeg-solarcube-4-8kwh` heeft een expliciete
-veiligheidsvermelding uit een echte Tweakers-review).
+veiligheidsvermelding uit een review).
 
 Herbruikbare prompt daarvoor (plak in een nieuwe Claude Code-sessie in deze
 projectmap):
@@ -150,7 +137,7 @@ projectmap):
 > `expected_cycles`, `expected_lifespan_note` en de inhoud van `notes`
 > (kosten en reviews). Lees dat bestand eerst om te zien wat er nu in staat.
 >
-> **Stap 1 — vertrek van de Synergrid-lijst, niet van Tweakers.** Download
+> **Stap 1 — vertrek van de Synergrid-lijst.** Download
 > de officiële Synergrid C10/26-lijst
 > (`https://www.synergrid.be/images/downloads/c10_26_list_of_pgu_compliant_with_c10_11_ed2_1_12_2019.xlsx`
 > — een `.xlsx`; installeer `openpyxl` met `pip install openpyxl` als het
@@ -246,7 +233,7 @@ projectmap):
   arbitrage-modus zou een geheel eigen rekenlogica en aparte marktdata
   (Belpex/Elexys) vergen; kan later terugkomen als apart onderdeel als
   daar vraag naar is.
-- **VREG-tarieven automatisch invullen** — idee vanuit de projecteigenaar:
+- **VREG-tarieven automatisch invullen**
   laat de gebruiker een energieleverancier + formule kiezen uit een
   lijstje, en vul daarmee automatisch zowel het afnametarief als het
   injectietarief in (nog steeds overschrijfbaar). VREG publiceert
