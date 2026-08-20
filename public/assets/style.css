@@ -1,0 +1,718 @@
+:root {
+  --bg: #f4f5f7;
+  --panel: #ffffff;
+  --panel-alt: #fafbfc;
+  --border: #e4e7ec;
+  --border-strong: #d3d8df;
+  --text: #10151f;
+  --text-muted: #5c6675;
+  --text-subtle: #8b93a1;
+  --accent: #157a52;
+  --accent-hover: #106442;
+  --accent-soft: #e6f3ec;
+  --accent-contrast: #ffffff;
+  --warning-bg: #fff8e6;
+  --warning-border: #f0cf6b;
+  --warning-text: #7a5b06;
+  --error-bg: #fdedec;
+  --error-border: #e8938c;
+  --error-text: #8a2c22;
+  --good: #157a52;
+  --bad: #b3401e;
+  --chart-red: #d9534f;
+  --chart-green: #2e8b52;
+  --chart-blue: #3d78c9;
+  --chart-amber: #b8791f;
+  --chart-purple: #7d5ba6;
+  --chart-gridline: #ececea;
+  --chart-tick: #97948c;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --shadow-sm: 0 1px 2px rgba(16, 21, 31, 0.04);
+  --shadow-md: 0 8px 24px -8px rgba(16, 21, 31, 0.12), 0 2px 8px -2px rgba(16, 21, 31, 0.06);
+  --shadow-focus: 0 0 0 3px rgba(21, 122, 82, 0.16);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 5rem;
+}
+
+@media (max-width: 560px) {
+  .page {
+    padding: 2rem 1rem 4rem;
+  }
+}
+
+h1 {
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.35rem;
+}
+
+.subtitle {
+  color: var(--text-muted);
+  margin: 0 0 1.75rem;
+  font-size: 0.98rem;
+}
+
+.privacy-note {
+  background: var(--accent-soft);
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1.05rem;
+  font-size: 0.88rem;
+  color: color-mix(in srgb, var(--accent) 75%, var(--text));
+  margin: 0 0 2rem;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 1.5rem 1.6rem;
+  margin-bottom: 1.25rem;
+  transition: box-shadow 0.15s ease;
+}
+
+.panel h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  margin: 0 0 1.1rem;
+}
+
+.h2-hint {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-subtle);
+  letter-spacing: 0;
+}
+
+.field-hint-lead {
+  margin-bottom: 1.1rem;
+}
+
+.step-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  flex: none;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin: 1rem 0 0.4rem;
+  color: var(--text);
+}
+
+label:first-of-type {
+  margin-top: 0;
+}
+
+label.inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+.field-hint {
+  color: var(--text-subtle);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  margin: 0.35rem 0 0;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0 1rem;
+}
+
+@media (max-width: 640px) {
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+input[type="number"],
+input[type="time"],
+select {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  font-size: 0.92rem;
+  font-family: inherit;
+  background: var(--panel);
+  color: var(--text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+input[type="number"]:hover,
+input[type="time"]:hover,
+select:hover {
+  border-color: var(--text-subtle);
+}
+
+input[type="number"]:focus,
+input[type="time"]:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: var(--shadow-focus);
+}
+
+select {
+  cursor: pointer;
+}
+
+/* Custom file input: keep the native <input type="file"> for a11y/behavior,
+   restyle its button + filename text via ::file-selector-button so it reads
+   as one cohesive control instead of the raw OS-default button + label. */
+input[type="file"] {
+  width: 100%;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.7rem;
+  background: var(--panel-alt);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+input[type="file"]:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+input[type="file"]::file-selector-button {
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent-contrast);
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.85rem;
+  margin-right: 0.7rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+input[type="file"]::file-selector-button:hover {
+  background: var(--accent-hover);
+}
+
+button.primary {
+  background: var(--accent);
+  color: var(--accent-contrast);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1.6rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  margin-top: 0.75rem;
+  box-shadow: var(--shadow-sm);
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+button.primary:hover {
+  background: var(--accent-hover);
+  box-shadow: var(--shadow-md);
+}
+
+button.primary:active {
+  transform: translateY(1px);
+}
+
+.error-box,
+.warning-box {
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.error-box {
+  background: var(--error-bg);
+  border: 1px solid var(--error-border);
+  color: var(--error-text);
+  margin-top: 1rem;
+}
+
+.warning-box {
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-border);
+  color: var(--warning-text);
+  margin: 0 0 0.7rem;
+}
+
+table.results {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.9rem;
+  font-size: 0.9rem;
+}
+
+table.results th,
+table.results td {
+  text-align: left;
+  padding: 0.65rem 0.7rem;
+  border-bottom: 1px solid var(--border);
+}
+
+table.results tbody tr.battery-row:hover {
+  background: var(--panel-alt);
+}
+
+/* table-layout:fixed dwingt de tabel om altijd binnen zijn container te
+   blijven (nooit breder dan 100%) i.p.v. zich uit te rekken tot de breedste
+   kolominhoud past — belangrijk omdat koppen als "Terugverdientijd" één
+   los woord zijn zonder natuurlijk afbreekpunt. De koptekst zelf bevat op
+   zulke plekken een &shy; (soft hyphen, zie app.js) als bedoeld breekpunt.
+   Bewust GEEN overflow-wrap/word-break hier: die laten een breuk overal
+   toe (niet enkel bij de &shy;), waardoor de browser een lelijker punt kan
+   kiezen dat toevallig net past i.p.v. het taalkundig correcte punt.
+   .table-scroll blijft als vangnet voor heel smalle schermen. */
+table.results-main {
+  table-layout: fixed;
+}
+
+table.results-main th,
+table.results-main td {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+table.results-main th {
+  font-size: 0.65rem;
+  letter-spacing: 0;
+  line-height: 1.35;
+}
+
+table.results-main th:first-child,
+table.results-main td:first-child {
+  width: 20%;
+  padding-left: 0.7rem;
+}
+
+.table-scroll {
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+}
+
+table.payback-table {
+  font-size: 0.83rem;
+  white-space: nowrap;
+}
+
+table.results th {
+  color: var(--text-subtle);
+  font-weight: 700;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.profitable {
+  color: var(--good);
+  font-weight: 700;
+}
+
+.not-profitable {
+  color: var(--bad);
+  font-weight: 700;
+}
+
+.result-summary {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  margin: 0 0 0.9rem;
+}
+
+.result-summary strong {
+  color: var(--text);
+}
+
+.disclaimer {
+  color: var(--text-subtle);
+  font-size: 0.8rem;
+  margin-top: 1rem;
+}
+
+footer {
+  color: var(--text-subtle);
+  font-size: 0.78rem;
+  text-align: center;
+  margin-top: 3.5rem;
+}
+
+/* --- Batterij-detail (klikbare rij + grafieken) -------------------------- */
+
+tr.battery-row {
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+
+tr.battery-row.expanded {
+  background: var(--accent-soft);
+}
+
+tr.detail-row td {
+  background: var(--panel-alt);
+  padding: 1.25rem 1.4rem 1.6rem;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+.battery-info {
+  margin-bottom: 1.1rem;
+  padding-bottom: 1.1rem;
+  border-bottom: 1px dashed var(--border-strong);
+}
+
+.battery-links {
+  margin: 0 0 0.6rem;
+  font-size: 0.84rem;
+}
+
+.battery-links a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.battery-links a:hover {
+  text-decoration: underline;
+}
+
+.battery-specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.2rem;
+  margin: 0 0 0.7rem;
+  font-size: 0.84rem;
+}
+
+.battery-specs strong {
+  font-weight: 600;
+  margin-right: 0.25rem;
+}
+
+.battery-registration {
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-border);
+  color: var(--warning-text);
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.75rem;
+  margin: 0 0 0.7rem;
+  font-size: 0.81rem;
+  line-height: 1.45;
+}
+
+.battery-lifespan {
+  border-collapse: collapse;
+  margin: 0 0 0.9rem;
+  font-size: 0.84rem;
+}
+
+.battery-lifespan th,
+.battery-lifespan td {
+  text-align: left;
+  padding: 0.35rem 0.9rem 0.35rem 0;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border);
+}
+
+.battery-lifespan tr:last-child th,
+.battery-lifespan tr:last-child td {
+  border-bottom: none;
+}
+
+.battery-lifespan th {
+  color: var(--text-subtle);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.battery-notes {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+.battery-notes strong {
+  color: var(--text);
+}
+
+.detail-charts {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.75rem;
+}
+
+.chart-block {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.1rem 1.2rem 1.25rem;
+}
+
+.chart-block h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.chart-note {
+  margin-top: 0.5rem;
+  line-height: 1.5;
+}
+
+.chart-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.legend-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.swatch-base {
+  background: var(--chart-red);
+}
+
+.swatch-extra {
+  background: var(--chart-green);
+}
+
+.legend-line {
+  display: inline-block;
+  width: 14px;
+  height: 0;
+  border-top-width: 2.5px;
+  border-top-style: solid;
+  margin-right: 2px;
+  vertical-align: middle;
+}
+
+.legend-line-cost {
+  border-top-color: var(--text-muted);
+  border-top-style: dashed;
+}
+
+.legend-line-peak {
+  border-top-color: var(--chart-blue);
+}
+
+.legend-line-self {
+  border-top-color: var(--chart-green);
+}
+
+.legend-line-total {
+  border-top-color: var(--text);
+  border-top-width: 3.5px;
+}
+
+.legend-line-warranty {
+  border-top-color: var(--chart-amber);
+  border-top-style: dashed;
+}
+
+.legend-line-lifespan {
+  border-top-color: var(--chart-purple);
+  border-top-style: dotted;
+  border-top-width: 3px;
+}
+
+.chart-wrap {
+  position: relative;
+  margin-top: 0.5rem;
+}
+
+.chart-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.chart-gridline {
+  stroke: var(--chart-gridline);
+  stroke-width: 1;
+}
+
+.chart-baseline {
+  stroke: var(--border-strong);
+  stroke-width: 1;
+}
+
+.chart-tick {
+  fill: var(--chart-tick);
+  font-size: 10px;
+}
+
+.chart-fill-base {
+  fill: var(--chart-red);
+}
+
+.chart-fill-extra {
+  fill: var(--chart-green);
+}
+
+.chart-hit {
+  fill: transparent;
+}
+
+.chart-line-cost {
+  fill: none;
+  stroke: var(--text-muted);
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+}
+
+.chart-line-peak {
+  fill: none;
+  stroke: var(--chart-blue);
+  stroke-width: 2.25;
+}
+
+.chart-line-self {
+  fill: none;
+  stroke: var(--chart-green);
+  stroke-width: 2.25;
+}
+
+.chart-line-total {
+  fill: none;
+  stroke: var(--text);
+  stroke-width: 3;
+}
+
+.chart-point-payback {
+  fill: var(--text);
+  stroke: var(--panel);
+  stroke-width: 2;
+}
+
+.chart-guide {
+  stroke: var(--border-strong);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.chart-guide-warranty {
+  stroke: var(--chart-amber);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 3;
+}
+
+.chart-guide-lifespan {
+  stroke: var(--chart-purple);
+  stroke-width: 1.5;
+  stroke-dasharray: 1.5 3.5;
+}
+
+.chart-bar-group:focus {
+  outline: none;
+}
+
+.chart-bar-group.chart-bar-hover .chart-fill-base,
+.chart-bar-group:focus .chart-fill-base {
+  fill: color-mix(in srgb, var(--chart-red) 85%, black);
+}
+
+.chart-bar-group.chart-bar-hover .chart-fill-extra,
+.chart-bar-group:focus .chart-fill-extra {
+  fill: color-mix(in srgb, var(--chart-green) 85%, black);
+}
+
+.chart-tooltip {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  background: var(--text);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.65rem;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: var(--shadow-md);
+  z-index: 5;
+}
+
+.tooltip-title {
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+
+.tooltip-row {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: space-between;
+}
+
+.tooltip-row strong {
+  font-weight: 700;
+}
+
+.tooltip-total {
+  margin-top: 0.2rem;
+  padding-top: 0.2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  font-weight: 700;
+}

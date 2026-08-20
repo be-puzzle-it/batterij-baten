@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stekkerbatterij kosten/baten-vergelijker</title>
+  <link rel="stylesheet" href="assets/style.css?v=18" />
+</head>
+<body>
+  <div class="page">
+    <h1>Stekkerbatterij kosten/baten-vergelijker</h1>
+    <p class="subtitle">Upload je Fluvius-verbruiksdata en bereken of een stekkerbatterij voor jou rendabel is.</p>
+
+    <div class="privacy-note">
+      🔒 Je CSV-bestand(en) worden <strong>nooit verstuurd</strong> naar een server. Alle berekeningen gebeuren
+      volledig lokaal in je eigen browser.
+    </div>
+
+    <form id="calc-form">
+      <div class="panel">
+        <h2><span class="step-badge">1</span>Verbruiksdata</h2>
+        <label for="kwartiertotalen-file">Kwartiertotalen-CSV (verplicht)</label>
+        <input type="file" id="kwartiertotalen-file" accept=".csv" required />
+        <p class="field-hint">
+          Download via <em>Mijn Fluvius → Verbruik → Historiek downloaden → detailniveau "Kwartiertotalen"</em>.
+        </p>
+      </div>
+
+      <div class="panel">
+        <h2><span class="step-badge">2</span>Piekvermogen <span class="h2-hint">(optioneel, sterk aangeraden)</span></h2>
+        <label for="piekvermogen-file">Piekvermogen-CSV</label>
+        <input type="file" id="piekvermogen-file" accept=".csv" />
+        <p class="field-hint">
+          Zelfde plek in Mijn Fluvius, detailniveau "Piekvermogen" — geeft de officiële Fluvius-piek per maand
+          i.p.v. een schatting.
+        </p>
+      </div>
+
+      <div class="panel">
+        <h2><span class="step-badge">3</span>Tarieven</h2>
+        <p class="field-hint field-hint-lead">
+          Eén gecombineerde berekening voor alle batterijen uit de lijst: elke batterij ontlaadt om je piekvermogen
+          af te toppen (capaciteitstarief) én vangt zonne-overschot op voor zelfverbruik, net zoals een echte
+          batterij dat tegelijk zou doen.
+        </p>
+
+        <div class="field-row">
+          <div>
+            <label for="capaciteitstarief">Capaciteitstarief (€/kW/jaar)</label>
+            <input type="number" id="capaciteitstarief" step="0.01" min="0" value="45.00" />
+          </div>
+          <div>
+            <label for="afname-tarief">Afnametarief (€/kWh)</label>
+            <input type="number" id="afname-tarief" step="0.001" min="0" value="0.30" />
+          </div>
+          <div>
+            <label for="injectie-vergoeding">Injectievergoeding (€/kWh)</label>
+            <input type="number" id="injectie-vergoeding" step="0.001" min="0" value="0" />
+          </div>
+        </div>
+        <p class="field-hint">
+          Controleer je eigen capaciteitstarief op je Fluvius-factuur. Injectievergoeding is wat je per kWh krijgt
+          voor overtollige zonnestroom (vaak 0 sinds de digitale meter) — enkel relevant bij zonnepanelen.
+        </p>
+      </div>
+
+      <button type="submit" class="primary">Bereken</button>
+    </form>
+
+    <div id="error-output"></div>
+    <div id="results-output"></div>
+
+    <footer>Geen data verlaat je browser. Batterijprijzen: <span id="prices-updated-at">onbekend</span>.</footer>
+  </div>
+
+  <script src="assets/csvParser.js?v=18"></script>
+  <script src="assets/calculators.js?v=18"></script>
+  <script src="assets/charts.js?v=18"></script>
+  <script src="assets/app.js?v=18"></script>
+</body>
+</html>
