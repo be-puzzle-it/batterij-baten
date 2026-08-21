@@ -153,6 +153,25 @@ label.inline {
   margin: 0.35rem 0 0;
 }
 
+.checkbox-field {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  font-weight: 500;
+  font-size: 0.85rem;
+  margin: 1rem 0 0;
+  cursor: pointer;
+}
+
+.checkbox-field input[type="checkbox"] {
+  margin-top: 0.15rem;
+  width: 1.05rem;
+  height: 1.05rem;
+  accent-color: var(--accent);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
 .field-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

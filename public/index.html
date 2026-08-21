@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Stekkerbatterij kosten/baten-vergelijker</title>
-  <link rel="stylesheet" href="assets/style.css?v=21" />
+  <link rel="stylesheet" href="assets/style.css?v=22" />
 </head>
 <body>
   <div class="page">
@@ -33,6 +33,18 @@
         <p class="field-hint">
           Zelfde plek in Mijn Fluvius, detailniveau "Piekvermogen" — geeft de officiële Fluvius-piek per maand
           i.p.v. een schatting.
+        </p>
+
+        <label class="checkbox-field">
+          <input type="checkbox" id="allow-grid-charging" checked />
+          <span>Batterij mag bijladen vanaf het net om de piek af te vlakken</span>
+        </label>
+        <p class="field-hint">
+          Staat standaard aan: naast zonne-overschot laadt de batterij, indien nodig, ook wat bij vanaf het net om
+          een piek te kunnen opvangen. Dat verlaagt je capaciteitstarief het meest, maar kost extra laad-/ontlaad&shy;cycli
+          bovenop wat zonne-energie alleen zou vergen — met impact op de levensduur van de batterij. Zet dit uit om
+          de batterij enkel op zonne-overschot te laten werken; de piekaftopping (en dus de terugverdientijd) wordt
+          dan minder groot, maar het zelfverbruik blijft ongewijzigd.
         </p>
       </div>
 
@@ -73,9 +85,9 @@
     <footer>Geen data verlaat je browser. Batterijprijzen: <span id="prices-updated-at">onbekend</span>.</footer>
   </div>
 
-  <script src="assets/csvParser.js?v=21"></script>
-  <script src="assets/calculators.js?v=21"></script>
-  <script src="assets/charts.js?v=21"></script>
-  <script src="assets/app.js?v=21"></script>
+  <script src="assets/csvParser.js?v=22"></script>
+  <script src="assets/calculators.js?v=22"></script>
+  <script src="assets/charts.js?v=22"></script>
+  <script src="assets/app.js?v=22"></script>
 </body>
 </html>

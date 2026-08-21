@@ -90,7 +90,7 @@ const BatteryCalculators = (() => {
   // capaciteit "verspild" aan gewoon dagverbruik als er nog een piek moet
   // komen — precies wat een slim batterijsysteem ook zou doen.
 
-  function simulateMonthFeasible(monthIntervals, thresholdKw, battery) {
+  function simulateMonthFeasible(monthIntervals, thresholdKw, battery, allowGridCharging) {
     let soc = battery.usable_capacity_kwh;
     const efficiency = battery.roundtrip_efficiency_pct / 100;
     for (const iv of monthIntervals) {
@@ -111,22 +111,27 @@ const BatteryCalculators = (() => {
         const fromInjectie = Math.min(maxChargeKwh, iv.injectie_kwh, (battery.usable_capacity_kwh - soc) / efficiency);
         soc += fromInjectie * efficiency;
         // Pas daarna eventueel bijladen vanaf het net — dát is wél netafname
-        // en moet dus onder de piekdrempel blijven.
-        const gridHeadroomKwh = (thresholdKw - loadKw) * QUARTER_HOURS;
-        const fromGrid = Math.min(maxChargeKwh - fromInjectie, gridHeadroomKwh, (battery.usable_capacity_kwh - soc) / efficiency);
-        soc += fromGrid * efficiency;
+        // en moet dus onder de piekdrempel blijven. Enkel als de gebruiker dit
+        // toestaat (zie de "laden vanaf het net"-optie); staat die uit, dan
+        // kan de batterij enkel op zonne-overschot rekenen om pieken op te
+        // vangen, wat de haalbare piekdrempel in zonarme maanden kan verhogen.
+        if (allowGridCharging) {
+          const gridHeadroomKwh = (thresholdKw - loadKw) * QUARTER_HOURS;
+          const fromGrid = Math.min(maxChargeKwh - fromInjectie, gridHeadroomKwh, (battery.usable_capacity_kwh - soc) / efficiency);
+          soc += fromGrid * efficiency;
+        }
       }
     }
     return true;
   }
 
-  function findLowestFeasiblePeakKw(monthIntervals, battery) {
+  function findLowestFeasiblePeakKw(monthIntervals, battery, allowGridCharging) {
     const currentPeakKw = Math.max(...monthIntervals.map((iv) => iv.afname_kwh / QUARTER_HOURS));
     let lo = 0;
     let hi = currentPeakKw;
     for (let i = 0; i < 40; i++) {
       const mid = (lo + hi) / 2;
-      if (simulateMonthFeasible(monthIntervals, mid, battery)) {
+      if (simulateMonthFeasible(monthIntervals, mid, battery, allowGridCharging)) {
         hi = mid;
       } else {
         lo = mid;
@@ -150,7 +155,7 @@ const BatteryCalculators = (() => {
   // bijlaadt. Dat verandert niets aan de haalbaarheid van de drempel (dezelfde
   // maximale laadcapaciteit blijft beschikbaar, enkel later ingezet) — wel aan
   // wélke bron elke geladen kWh toegeschreven krijgt.
-  function simulateMonthDetailed(monthIntervals, thresholdKw, battery) {
+  function simulateMonthDetailed(monthIntervals, thresholdKw, battery, allowGridCharging) {
     const efficiency = battery.roundtrip_efficiency_pct / 100;
     const n = monthIntervals.length;
 
@@ -167,6 +172,12 @@ const BatteryCalculators = (() => {
       } else {
         // Zelfde laadcapaciteit als in de voorwaartse doorgang: zon eerst
         // (niet begrensd door de drempel), daarna net binnen de drempel.
+        // Deze reserve stuurt enkel hoeveel er nog vrij is voor zelfverbruik
+        // (stap 2 hieronder) — dat mag niet veranderen naargelang "laden
+        // vanaf het net" aan- of uitstaat (dat raakt enkel de piekaftopping,
+        // niet het zelfverbruik), dus hier wordt altijd verondersteld dat
+        // bijladen vanaf het net mogelijk is. Stap 3 hieronder is waar
+        // `allowGridCharging` de effectieve netlading al dan niet toelaat.
         const maxChargeKwh = battery.max_charge_kw * QUARTER_HOURS;
         const injectiePotential = Math.min(maxChargeKwh, iv.injectie_kwh);
         const gridHeadroomKwh = Math.max(thresholdKw - loadKw, 0) * QUARTER_HOURS;
@@ -217,8 +228,11 @@ const BatteryCalculators = (() => {
       //    kunnen afvlakken ("just in time"). Dit is wél netafname en moet dus
       //    binnen de piekdrempel blijven. Voor gewoon zelfverbruik wordt nooit
       //    van het net geladen: bij een vlak tarief is dat per definitie
-      //    verlieslatend (round-trip-verlies).
-      const stillNeededStored = Math.max(reserveKwh - soc, 0);
+      //    verlieslatend (round-trip-verlies). Dit is de enige stap die
+      //    `allowGridCharging` respecteert — staat die uit, dan wordt de
+      //    piekdrempel zelf al hoger gevonden (zie findLowestFeasiblePeakKw)
+      //    en gebeurt hier gewoon geen netlading, zonder stap 1/2 te raken.
+      const stillNeededStored = allowGridCharging ? Math.max(reserveKwh - soc, 0) : 0;
       if (stillNeededStored > 0) {
         const gridHeadroomKwh = Math.max(thresholdKw - loadKw, 0) * QUARTER_HOURS;
         const remainingPower = Math.max(maxChargeKwh - fromInjectie, 0);
@@ -248,7 +262,7 @@ const BatteryCalculators = (() => {
   // Per-maand combinatie van piekvergelijking én zelfverbruik — herbruikt
   // door combinedCalculate en door de twee grafieken in de
   // batterij-detailweergave, zodat beide exact dezelfde simulatie tonen.
-  function computeMonthlyCombined(kwartierIntervals, piekvermogenMonths, battery) {
+  function computeMonthlyCombined(kwartierIntervals, piekvermogenMonths, battery, allowGridCharging = true) {
     const byMonth = groupByMonth(kwartierIntervals);
     let months = Array.from(byMonth.keys()).sort();
     if (months.length === 0) {
@@ -277,11 +291,12 @@ const BatteryCalculators = (() => {
 
     const monthResults = months.map((month) => {
       const monthIntervals = byMonth.get(month);
-      const { currentPeakKw: derivedPeakKw, simulatedNewPeakKw } = findLowestFeasiblePeakKw(monthIntervals, battery);
+      const { currentPeakKw: derivedPeakKw, simulatedNewPeakKw } = findLowestFeasiblePeakKw(monthIntervals, battery, allowGridCharging);
       const { totalAfnameKwh, avoidedAfnameKwh, dischargedKwh, gridChargeKwh, freeInitialChargeKwh, avoidedInjectieKwh } = simulateMonthDetailed(
         monthIntervals,
         simulatedNewPeakKw,
-        battery
+        battery,
+        allowGridCharging
       );
       const official = officialByMonth.get(month);
       if (official && derivedPeakKw > 0) {
@@ -315,13 +330,15 @@ const BatteryCalculators = (() => {
    * @param {Array} kwartierIntervals uit FluviusCsv.parseKwartiertotalen()
    * @param {Array|null} piekvermogenMonths uit FluviusCsv.parsePiekvermogen(), of null
    * @param {object} battery
-   * @param {{capaciteitstarief_eur_per_kw_jaar:number, afname_tarief_eur_kwh:number, injectie_vergoeding_eur_kwh:number}} params
+   * @param {{capaciteitstarief_eur_per_kw_jaar:number, afname_tarief_eur_kwh:number, injectie_vergoeding_eur_kwh:number, allowGridCharging?:boolean}} params
    */
   function combinedCalculate(kwartierIntervals, piekvermogenMonths, battery, params) {
+    const allowGridCharging = params.allowGridCharging !== false;
     const { monthResults, monthsUsed, usingOfficialBaseline, warnings } = computeMonthlyCombined(
       kwartierIntervals,
       piekvermogenMonths,
-      battery
+      battery,
+      allowGridCharging
     );
 
     // Piekaftopping / capaciteitstarief.
@@ -340,7 +357,6 @@ const BatteryCalculators = (() => {
     // die fysieke grens kan de piek sowieso nooit méér verlagen, ongeacht wat
     // de afgeronde jaarcijfers suggereren.
     const peakReductionKw = Math.min(Math.max(currentYearPeakKw - newYearPeakKw, 0), battery.max_discharge_kw);
-    const peakBenefit = peakReductionKw * params.capaciteitstarief_eur_per_kw_jaar;
 
     // Zelfverbruik — dezelfde simulatie, dus enkel wat de batterij overhield
     // ná voorrang aan piekaftopping (zie simulateMonthDetailed hierboven).
@@ -353,8 +369,24 @@ const BatteryCalculators = (() => {
     const annualAvoidedInjectieKwh = totalAvoidedInjectieKwh * yearFactor;
     const annualDischargedKwh = totalDischargedKwh * yearFactor;
     const annualGridChargeKwh = totalGridChargeKwh * yearFactor;
+
+    // Zelfverbruik afbakenen als "welk deel van de opgevangen zonne-overschot
+    // kwam later ook echt terug als vermeden afname" (na round-trip-verlies) —
+    // dat hangt puur af van hoeveel zon er was, nooit van de piekdrempel of
+    // van "laden vanaf het net" (dat raakt enkel de piekaftopping hieronder).
+    // De rest van de vermeden afname (bv. ontlading die enkel nodig was om
+    // een piek af te toppen) wordt bij de piekopbrengst geteld in plaats van
+    // hier, zodat het vinkje "laden van het net" de opbrengst eigenverbruik
+    // niet kan beïnvloeden — enkel de piekopbrengst.
+    const efficiency = battery.roundtrip_efficiency_pct / 100;
+    const annualSelfConsumptionAfnameKwh = annualAvoidedInjectieKwh * efficiency;
     const selfConsumptionBenefit =
-      annualAvoidedAfnameKwh * params.afname_tarief_eur_kwh - annualAvoidedInjectieKwh * params.injectie_vergoeding_eur_kwh;
+      annualSelfConsumptionAfnameKwh * params.afname_tarief_eur_kwh -
+      annualAvoidedInjectieKwh * params.injectie_vergoeding_eur_kwh;
+
+    const peakDrivenAfnameKwh = Math.max(annualAvoidedAfnameKwh - annualSelfConsumptionAfnameKwh, 0);
+    const peakBenefit =
+      peakReductionKw * params.capaciteitstarief_eur_per_kw_jaar + peakDrivenAfnameKwh * params.afname_tarief_eur_kwh;
 
     const annualBenefit = peakBenefit + selfConsumptionBenefit;
 
@@ -367,6 +399,7 @@ const BatteryCalculators = (() => {
       peakReductionKw,
       peakBenefit,
       annualAvoidedAfnameKwh,
+      annualSelfConsumptionAfnameKwh,
       annualAvoidedInjectieKwh,
       annualDischargedKwh,
       annualGridChargeKwh,

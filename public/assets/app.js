@@ -34,6 +34,7 @@
       capaciteitstarief_eur_per_kw_jaar: Number(document.getElementById('capaciteitstarief').value),
       afname_tarief_eur_kwh: Number(document.getElementById('afname-tarief').value),
       injectie_vergoeding_eur_kwh: Number(document.getElementById('injectie-vergoeding').value),
+      allowGridCharging: document.getElementById('allow-grid-charging').checked,
     };
   }
 
@@ -79,7 +80,7 @@
         <td>${row.battery.brand} ${row.battery.model}</td>
         <td>${upfrontCost}</td>
         <td>${recurringCost}</td>
-        <td>${kwhFmt(row.result.annualAvoidedAfnameKwh)}</td>
+        <td>${kwhFmt(row.result.annualSelfConsumptionAfnameKwh)}</td>
         <td>${kwFmt(row.result.peakReductionKw)}</td>
         <td>${eurFmt2.format(row.result.annualBenefit)}</td>
         <td>${paybackCell(row.result)}</td>
@@ -177,7 +178,7 @@
         <td>${eurFmt2.format(outstanding)}</td>
         <td>${kwFmt(result.peakReductionKw)}</td>
         <td>${eurFmt2.format(result.peakBenefit)}</td>
-        <td>${kwhFmt(result.annualAvoidedAfnameKwh)}</td>
+        <td>${kwhFmt(result.annualSelfConsumptionAfnameKwh)}</td>
         <td>${eurFmt2.format(result.selfConsumptionBenefit)}</td>
       </tr>`;
     }
@@ -215,11 +216,15 @@
     const hasInjectie = lastKwartierIntervals.some((iv) => iv.injectie_kwh > 0);
 
     if (hasInjectie) {
-      const consumptionData = result.monthResults.map((m) => ({
-        month: m.month,
-        base: Math.max(m.totalAfnameKwh - m.avoidedAfnameKwh, 0),
-        extra: m.avoidedAfnameKwh,
-      }));
+      const efficiency = battery.roundtrip_efficiency_pct / 100;
+      const consumptionData = result.monthResults.map((m) => {
+        const selfConsumptionKwh = m.avoidedInjectieKwh * efficiency;
+        return {
+          month: m.month,
+          base: Math.max(m.totalAfnameKwh - selfConsumptionKwh, 0),
+          extra: selfConsumptionKwh,
+        };
+      });
       html += BatteryCharts.renderStackedBarChart({
         title: 'Verbruik per maand',
         data: consumptionData,
@@ -252,9 +257,10 @@
     });
     if (totalGridCharge > 1) {
       html += `<p class="field-hint chart-note">In maanden met weinig zon laadt de batterij vanaf het net bij om de
-        maandpiek te kunnen blijven afvlakken. Die kWh's betaal je aan het afnametarief, dus ze leveren géén
-        besparing op je verbruik — ze zijn al in mindering gebracht op "extra zelfverbruik" hierboven. Ze blijven
-        wel zinvol omdat ze het capaciteitstarief verlagen; dat voordeel staat apart in de terugverdiengrafiek.</p>`;
+        maandpiek te kunnen blijven afvlakken (dit kan uitgezet worden bij stap 2 hierboven). Die kWh's betaal je aan
+        het afnametarief en leveren dus géén "extra zelfverbruik" op — dat blijft voorbehouden voor opgevangen
+        zonne-overschot. Netladen blijft wel zinvol omdat het de piek verder verlaagt; dat voordeel (inclusief de
+        kWh's die er zelf mee afgetopt worden) staat apart bij "opbrengst piek" in de terugverdiengrafiek.</p>`;
     }
 
     const peakData = result.monthResults.map((m) => {
