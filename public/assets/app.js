@@ -148,7 +148,10 @@
       : '';
 
     const notesHtml = battery.notes
-      ? `<p class="battery-notes"><strong>Notities:</strong> ${escapeHtml(battery.notes)}</p>`
+      ? `<details class="battery-notes">
+          <summary>Notities (onderzoek &amp; bronnen)</summary>
+          <p>${escapeHtml(battery.notes)}</p>
+        </details>`
       : '';
     return `<div class="battery-info">${linksHtml}${specsHtml}${registrationHtml}${lifespanHtml}${notesHtml}</div>`;
   }

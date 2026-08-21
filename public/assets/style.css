@@ -472,11 +472,47 @@ tr.detail-row td {
   margin: 0;
   font-size: 0.84rem;
   color: var(--text-muted);
+}
+
+.battery-notes summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text);
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  user-select: none;
+}
+
+.battery-notes summary::-webkit-details-marker {
+  display: none;
+}
+
+.battery-notes summary::before {
+  content: '▸';
+  display: inline-block;
+  font-size: 0.75em;
+  color: var(--text-subtle);
+  transition: transform 0.15s ease;
+}
+
+.battery-notes[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.battery-notes summary:hover {
+  color: var(--accent);
+}
+
+.battery-notes p {
+  display: none;
+  margin: 0.6rem 0 0;
   line-height: 1.55;
 }
 
-.battery-notes strong {
-  color: var(--text);
+.battery-notes[open] p {
+  display: block;
 }
 
 .detail-charts {
