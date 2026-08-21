@@ -130,6 +130,17 @@
     if (battery.expected_cycles != null) lifespanRows.push(['Verwacht aantal cycli', `± ${battery.expected_cycles.toLocaleString('nl-BE')}`]);
     lifespanRows.push(['Garantie', `${battery.warranty_years} jaar`]);
     if (battery.expected_lifespan_note) lifespanRows.push(['Verwachte levensduur', escapeHtml(battery.expected_lifespan_note)]);
+
+    const yesNo = (v) => (v === true ? 'Ja' : v === false ? 'Nee' : 'Onbevestigd');
+    if (battery.p1_port_support !== undefined) {
+      const note = battery.p1_port_note ? ` — ${escapeHtml(battery.p1_port_note)}` : '';
+      lifespanRows.push(['P1-sturing (laden op zonne-overschot)', `${yesNo(battery.p1_port_support)}${note}`]);
+    }
+    if (battery.direct_pv_input !== undefined) {
+      const note = battery.direct_pv_input_note ? ` — ${escapeHtml(battery.direct_pv_input_note)}` : '';
+      lifespanRows.push(['Rechtstreeks zonnepanelen aansluiten', `${yesNo(battery.direct_pv_input)}${note}`]);
+    }
+
     const lifespanHtml = lifespanRows.length
       ? `<table class="battery-lifespan">
           ${lifespanRows.map(([label, value]) => `<tr><th>${label}</th><td>${value}</td></tr>`).join('')}

@@ -111,8 +111,16 @@ Elke entry heeft ook `chemistry` (celtype, bv. `"LiFePO4"`), `expected_cycles`
 (fabrikantsopgave, afgerond) en `expected_lifespan_note` (vrije tekst:
 capaciteitsbehoud na X cycli/jaar zoals de fabrikant dat zelf formuleert —
 niet elke fabrikant publiceert een expliciet retentiepercentage, dus dat
-verschilt qua precisie per entry). Deze worden in de detailweergave getoond
-in een tabelletje boven `notes`, samen met `warranty_years`.
+verschilt qua precisie per entry). Verder ook `p1_port_support` (kan het
+toestel op de P1-poort van de slimme meter sturen, voor laden op
+zonne-overschot? `true`/`false`/`null` als onbevestigd) met `p1_port_note`,
+en `direct_pv_input` (heeft het toestel een eigen MPPT/PV-ingang om
+zonnepanelen rechtstreeks aan te sluiten, of enkel AC-gekoppeld gebruikbaar
+naast een bestaande zonne-omvormer?) met `direct_pv_input_note` — beide
+primair afgeleid uit de Synergrid-kolom "Power control system type" (voor
+P1) en fabrikantendocumentatie (voor PV-input); `null`/onbevestigd wordt
+nooit gegokt naar `true` of `false`. Deze worden in de detailweergave
+getoond in een tabelletje boven `notes`, samen met `warranty_years`.
 
 ### Prijzen verversen
 
@@ -135,8 +143,10 @@ projectmap):
 
 > Ververs `public/data/batteries.json` volledig: prijzen, nieuwe/verdwenen
 > varianten, en per batterij ook `manufacturer_url`, `chemistry`,
-> `expected_cycles`, `expected_lifespan_note` en de inhoud van `notes`
-> (kosten en reviews). Lees dat bestand eerst om te zien wat er nu in staat.
+> `expected_cycles`, `expected_lifespan_note`, `p1_port_support` (+
+> `p1_port_note`), `direct_pv_input` (+ `direct_pv_input_note`) en de inhoud
+> van `notes` (kosten en reviews). Lees dat bestand eerst om te zien wat er
+> nu in staat.
 >
 > **Stap 1 — vertrek van de Synergrid-lijst.** Download
 > de officiële Synergrid C10/26-lijst
@@ -201,6 +211,14 @@ projectmap):
 > `expected_lifespan_note` (capaciteitsbehoud na X cycli/jaar) — nooit een
 > percentage of cyclusaantal verzinnen als de fabrikant het niet expliciet
 > publiceert, dan liever kort noteren dat het niet gepubliceerd is.
+> Controleer ook `p1_port_support` (kan het toestel via de P1-poort van de
+> slimme meter sturen, voor laden op zonne-overschot? — check eerst de
+> Synergrid-kolom "Power control system type", die vermeldt dit vaak
+> expliciet) en `direct_pv_input` (heeft het toestel een eigen MPPT/PV-
+> ingang, of is het enkel AC-gekoppeld naast een bestaande zonne-omvormer?
+> let op: "AC" in de productnaam betekent niet bij elk merk hetzelfde —
+> sommige "AC"-varianten hebben wél een eigen MPPT ernaast, dus per product
+> verifiëren i.p.v. op de naam afgaan). Onbevestigd → `null`, nooit gokken.
 >
 > **Stap 3 — reviews en bekende problemen.** Zoek per batterij echte
 > gebruikersreviews (Tweakers, Trustpilot, fora) op garantieklachten,
