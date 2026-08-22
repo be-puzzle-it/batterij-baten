@@ -438,6 +438,12 @@
         rows.push({ battery, result });
       }
       rows.sort((a, b) => {
+        // Batterijen zonder geverifieerde huidige prijs+koopllink onderaan:
+        // we weten dan niet zeker of ze nog besteld kunnen worden, dus een
+        // gunstige terugverdientijd zou misleidend bovenaan staan.
+        const aHasLink = a.battery.price_url != null;
+        const bHasLink = b.battery.price_url != null;
+        if (aHasLink !== bHasLink) return aHasLink ? -1 : 1;
         const ap = a.result.paybackYears ?? Infinity;
         const bp = b.result.paybackYears ?? Infinity;
         return ap - bp;
