@@ -487,6 +487,11 @@ tr.detail-row td {
   white-space: nowrap;
 }
 
+.price-source-note {
+  color: var(--text-subtle);
+  font-size: 0.78rem;
+}
+
 .battery-notes {
   margin: 0;
   font-size: 0.84rem;

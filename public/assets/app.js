@@ -127,6 +127,20 @@
       : '';
 
     const lifespanRows = [];
+    if (battery.price_url && battery.current_price_eur != null) {
+      const sourceLabels = {
+        shop: null,
+        tweakers: '(via Tweakers)',
+        manufacturer_list: '(adviesprijs fabrikant)',
+        unverified: '(prijs niet onafhankelijk geverifieerd)',
+      };
+      const sourceNote = sourceLabels[battery.price_source_label];
+      const sourceHtml = sourceNote ? ` <span class="price-source-note">${escapeHtml(sourceNote)}</span>` : '';
+      lifespanRows.push([
+        'Prijs',
+        `${eurFmt2.format(battery.current_price_eur)} bij <a href="${escapeHtml(battery.price_url)}" target="_blank" rel="noopener">${escapeHtml(battery.shop_name ?? 'winkel')}</a>${sourceHtml}`,
+      ]);
+    }
     if (battery.chemistry) lifespanRows.push(['Type batterij', escapeHtml(battery.chemistry)]);
     if (battery.expected_cycles != null) lifespanRows.push(['Verwacht aantal cycli', `± ${battery.expected_cycles.toLocaleString('nl-BE')}`]);
     lifespanRows.push(['Garantie', `${battery.warranty_years} jaar`]);

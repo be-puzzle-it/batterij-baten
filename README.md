@@ -122,6 +122,20 @@ P1) en fabrikantendocumentatie (voor PV-input); `null`/onbevestigd wordt
 nooit gegokt naar `true` of `false`. Deze worden in de detailweergave
 getoond in een tabelletje boven `notes`, samen met `warranty_years`.
 
+Elke entry heeft daarnaast, waar bevestigd, `price_url` — een rechtstreekse
+link naar een concrete pagina waar `current_price_eur` effectief geverifieerd
+is, bij voorkeur een winkel die (aantoonbaar) levert in België, anders
+`tweakers_url`/de fabrikant zelf als terugval — samen met `price_source_label`
+(`"shop"` | `"manufacturer_list"` — er is geen apart `"tweakers"`-label in de
+praktijk, dat viel steeds samen met `"shop"` of werd niet als bron gebruikt),
+`shop_name` (leesbare naam voor de link) en `delivers_to_belgium`
+(`true`/`false`/`"unknown"`). **Dit veld wordt bewust leeg gelaten (geen
+koopllink getoond in de detailweergave) wanneer geen enkele bron met
+voldoende zekerheid een actuele prijs + geldige link kon leveren** — nooit
+een onzekere/verlopen link tonen als was het een bevestigde koopoptie. Zulke
+gevallen (en prijsdiscrepanties t.o.v. een eerder geregistreerde prijs)
+worden wel toegelicht in `notes`.
+
 ### Prijzen verversen
 
 Er is **geen geautomatiseerde dagelijkse scraper**.  
@@ -144,7 +158,10 @@ projectmap):
 > Ververs `public/data/batteries.json` volledig: prijzen, nieuwe/verdwenen
 > varianten, en per batterij ook `manufacturer_url`, `chemistry`,
 > `expected_cycles`, `expected_lifespan_note`, `p1_port_support` (+
-> `p1_port_note`), `direct_pv_input` (+ `direct_pv_input_note`) en de inhoud
+> `p1_port_note`), `direct_pv_input` (+ `direct_pv_input_note`), `price_url`
+> (+ `price_source_label`, `shop_name`, `delivers_to_belgium` — zie het
+> schema hierboven; enkel invullen bij een écht geverifieerde, actuele
+> prijs+link, anders leeg laten en toelichten in `notes`) en de inhoud
 > van `notes` (kosten en reviews). Lees dat bestand eerst om te zien wat er
 > nu in staat.
 >
@@ -182,7 +199,14 @@ projectmap):
 > Voor elke bevestigde, nog verkochte batterij:
 > - Staat de variant al in `batteries.json` (matchen op `id` of merk+model)?
 >   Werk dan `current_price_eur`, `capacity_kwh` (indien gewijzigd) en
->   `updated_at` bij.
+>   `updated_at` bij. Zoek er meteen een rechtstreekse link bij waar die
+>   exacte prijs voor dat exacte model geverifieerd is — bij voorkeur een
+>   winkel die aantoonbaar levert in België, anders `tweakers_url` of de
+>   fabrikant zelf als terugval — en zet die in `price_url` (+
+>   `price_source_label`, `shop_name`, `delivers_to_belgium`). Geen enkele
+>   bron kon met voldoende zekerheid een actuele prijs+link leveren? Laat
+>   `price_url` dan gewoon weg (geen koopllink tonen die niet klopt) en
+>   leg uit waarom in `notes`.
 > - Nieuwe variant? Gebruik voor `max_charge_kw`/`max_discharge_kw` altijd
 >   het op de Synergrid-lijst gehomologeerde vermogen (nooit de
 >   fabrikantwaarde als die afwijkt — let op producten die apart
